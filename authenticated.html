@@ -1,5 +1,9 @@
 <!DOCTYPE html>
   <head>
+    <title>Web Version of Yo</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet" type="text/css" media="all">
+
     <!-- React JS -->
     <script src="http://fb.me/react-0.10.0.min.js"></script>
     <script src="http://fb.me/JSXTransformer-0.10.0.js"></script>
@@ -14,126 +18,10 @@
   <body>
     <div id="mount"></div>
 
+    <script type="text/jsx" src="coreComponents.js"></script>
+
     <script type="text/jsx">
       /** @jsx React.DOM */
-
-      var baseUrl = 'https://yo-in-react.firebaseio.com';
-
-      // USER DISPLAY COMPONENT (to display username)
-      var UserDisplay = React.createClass({
-        render : function() {
-          return <section><h3>Username: {this.props.user.name}</h3></section>;
-        }
-      });
-
-      // YO DISPLAY COMPONENT (to display yo count and received yos)
-      var YoDisplay = React.createClass({
-        mixins : [ReactFireMixin],
-        componentWillMount : function() {
-          this.bindAsArray(new Firebase(baseUrl + '/users/' + this.props.name + '/notifications'), 'notifications');
-        },
-        getInitialState : function() {
-          return {
-            notifications : []
-          };
-        },
-        render : function() {
-          var notifications = '';
-          if (this.state.notifications.length) {
-            notifications = (
-              <div>
-                <h3>Yos</h3>
-                <ul>{this.state.notifications.slice().reverse().map(function(notification) {
-                  var timestamp = new Date(notification.timestamp).toString();
-                  return <li>{notification.from} at {timestamp}</li>;
-                })}</ul>
-              </div>
-            );
-          }
-          return (
-            <section>
-              <div>Yo Count: {this.props.user.yoCount || 0}</div>
-              {notifications}
-            </section>
-          );
-        }
-      });
-
-      // PEOPLE TO YO COMPONENT (to display list of people you can yo)
-      var PeopleToYo = React.createClass({
-        mixins : [ReactFireMixin],
-        componentWillMount : function() {
-          this.bindAsArray(new Firebase(baseUrl + '/users/' + this.props.name + '/yoList'), 'yoList');
-        },
-        getInitialState : function() {
-          return {
-            newPerson : '',
-            yoList : [],
-            showError : false
-          };
-        },
-        _sendYo : function(personToYo) {
-          var $this = this;
-          var yoRecipient = new Firebase(baseUrl + '/users/' + personToYo);
-
-          yoRecipient.once('value', function(data) {
-            if (!data.val()) {
-              return;
-            }
-
-            yoRecipient.child('yoCount').set((data.val().yoCount + 1) || 1);
-            yoRecipient.child('notifications').push({
-              from : $this.props.name,
-              timestamp : new Date().getTime()
-            });
-          });
-        },
-        _handleChange : function(event) {
-          this.setState({
-            showError : false,
-            newPerson : event.target.value
-          });
-        },
-        _addPerson : function() {
-          if (!this.state.newPerson.trim()) {
-            return;
-          }
-
-          var $this = this;
-          var newPersonRef = new Firebase(baseUrl + '/users/' + this.state.newPerson.trim());
-          newPersonRef.once('value', function(data) {
-            if (!data.val()) {
-              $this.setState({
-                showError : true
-              });
-              return;
-            }
-
-            $this.firebaseRefs['yoList'].push({
-              name: $this.state.newPerson.trim()
-            });
-
-            $this.setState({
-              showError : false,
-              newPerson : ''
-            });
-          });
-
-        },
-        render : function() {
-          return (
-            <section>
-              <ul>{this.state.yoList.map(function(person) {
-                return <li>{person.name} <button onClick={this._sendYo.bind(this, person.name)}>Yo</button></li>;
-              }, this)}</ul>
-
-              <input type="text" value={this.state.newPerson} onChange={this._handleChange} />
-              <button onClick={this._addPerson}>Add to Yo List</button>
-              {this.state.showError ? 'That person doesn\'t exist!' : ''}
-            </section>
-          );
-        }
-      });
 
       // APP COMPONENT
       var App = React.createClass({
@@ -195,7 +83,7 @@
           if (this.state.authenticated) {
             return (
               <div>
-                <a href="#" onClick={this._logout}>Logout</a>
+                <a className="margin-bottom btn btn-default btn-large" href="#" onClick={this._logout}>Logout</a>
                 <UserDisplay user={this.state.user} />
                 <PeopleToYo name={this.state.name} />
                 <YoDisplay user={this.state.user} name={this.state.name} />
@@ -203,10 +91,17 @@
             );
           }
 
+          var errorMsg = '';
+          if (this.state.errorMsg) {
+            errorMsg = <div className="alert alert-danger" role="alert">Error : {this.state.errorMsg}</div>
+          }
+
           return (
             <div>
-              <a href="#" onClick={this._login}>Login</a>
-              <div>{this.state.errorMsg ? ('Error : ' + this.state.errorMsg) : ''}</div>
+              <h3>My Web Version of Yo using React and Firebase</h3>
+              <div className="margin-bottom">If you do not want to log in, you can still view the experience at <a href="index.html">here</a>.</div>
+              {errorMsg}
+              <a className="margin-bottom btn btn-primary" href="#" onClick={this._login}>Login</a>
             </div>
           );
         }
