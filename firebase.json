@@ -1,0 +1,9 @@
+{
+  "firebase": "yo-in-react",
+  "public": ".",
+  "ignore": [
+    "firebase.json",
+    "**/.*",
+    "**/node_modules/**"
+  ]
+}

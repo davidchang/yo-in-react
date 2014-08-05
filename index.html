@@ -5,15 +5,15 @@
     <link href="style.css" rel="stylesheet" type="text/css" media="all">
 
     <!-- React JS -->
-    <script src="http://fb.me/react-0.10.0.min.js"></script>
-    <script src="http://fb.me/JSXTransformer-0.10.0.js"></script>
+    <script src="vendor/react-0.10.0.min.js"></script>
+    <script src="vendor/JSXTransformer-0.10.0.js"></script>
 
     <!-- Firebase JS -->
-    <script src="https://cdn.firebase.com/js/client/1.0.17/firebase.js"></script>
+    <script src="vendor/firebase.js"></script>
     <!-- Firebase Login JS -->
-    <script src="https://cdn.firebase.com/js/simple-login/1.6.1/firebase-simple-login.js"></script>
+    <script src="vendor/firebase-simple-login.js"></script>
     <!-- ReactFire -->
-    <script src="https://cdn.firebase.com/libs/reactfire/0.1.6/reactfire.min.js"></script>
+    <script src="vendor/reactfire.min.js"></script>
   </head>
   <body>
     <div id="mount"></div>
@@ -33,8 +33,7 @@
         getInitialState : function() {
           return {
             name : 'special-user-for-demo',
-            user : {},
-            errorMsg : ''
+            user : {}
           };
         },
         render : function() {
@@ -46,6 +45,7 @@
               <UserDisplay user={this.state.user} />
               <PeopleToYo name={this.state.name} />
               <YoDisplay user={this.state.user} name={this.state.name} />
+              <h5>Made by <a href="https://twitter.com/davidchizzle">@davidchizzle</a> from <a href="http://davidandsuzi.com">davidandsuzi.com</a></h5>
             </div>
           );
         }
